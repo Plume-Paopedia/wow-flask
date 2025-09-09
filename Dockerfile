@@ -87,7 +87,7 @@ ENV FLASK_ENV=production
 ENV PYTHONPATH=/app
 
 # Point de montage pour les volumes persistants
-VOLUME ["/app/instance", "/app/uploads", "/app/logs"]
+#VOLUME ["/app/instance", "/app/uploads", "/app/logs"]
 
 # Commande par défaut
 ENTRYPOINT ["./entrypoint.sh"]

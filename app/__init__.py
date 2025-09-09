@@ -9,6 +9,7 @@ from flask import Flask, request, current_app
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app.config import config
+from app import extensions
 from app.extensions import (
     db, migrate, login_manager, mail, cache, limiter, babel, csrf,
     oauth, talisman
@@ -77,6 +78,7 @@ def init_extensions(app: Flask) -> None:
     
     # Internationalisation
     babel.init_app(app)
+    # babel.localeselector(extensions.get_locale)
     
     # Sécurité CSRF
     if app.config['CSRF_ENABLED']:
@@ -120,23 +122,28 @@ def register_error_handlers(app: Flask) -> None:
     
     @app.errorhandler(400)
     def bad_request_error(error):
+        from flask import render_template
         return render_template('errors/400.html'), 400
     
     @app.errorhandler(403)
     def forbidden_error(error):
+        from flask import render_template
         return render_template('errors/403.html'), 403
     
     @app.errorhandler(404)
     def not_found_error(error):
+        from flask import render_template
         return render_template('errors/404.html'), 404
     
     @app.errorhandler(429)
     def ratelimit_handler(error):
+        from flask import render_template
         return render_template('errors/429.html'), 429
     
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
+        from flask import render_template
         return render_template('errors/500.html'), 500
 
 
@@ -221,4 +228,5 @@ def register_cli_commands(app: Flask) -> None:
 
 
 # Imports nécessaires pour les gestionnaires d'erreurs
-from flask import render_template, click
+from flask import render_template
+import click

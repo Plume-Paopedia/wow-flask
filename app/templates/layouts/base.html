@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() or 'fr' }}" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO -->
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Portail communautaire français de tutoriels World of Warcraft{% endblock %}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='img/og-default.jpg', _external=True) }}{% endblock %}">
+    <meta property="og:site_name" content="{{ app_name }}">
+    <meta property="og:locale" content="{{ get_locale() or 'fr_FR' }}">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
+    <meta name="twitter:title" content="{{ self.og_title() }}">
+    <meta name="twitter:description" content="{{ self.og_description() }}">
+    <meta name="twitter:image" content="{{ self.og_image() }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+    
+    <!-- CSS -->
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'wow-gold': '#f4d03f',
+                        'wow-blue': '#0084ff',
+                        'wow-purple': '#a335ee',
+                        'wow-green': '#1eff00',
+                        'wow-red': '#ff0040',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-full bg-gray-50 dark:bg-gray-900 transition-colors" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches) }" x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', val); val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark') })" :class="{ 'dark': darkMode }">
+    
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{{ url_for('public.index') }}" class="flex-shrink-0 flex items-center">
+                        <img class="h-8 w-auto" src="{{ url_for('static', filename='img/logo.svg') }}" alt="{{ app_name }}">
+                        <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">WoW Flask</span>
+                    </a>
+                </div>
+                
+                <!-- Navigation centrale -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url_for('public.tutorials') }}" class="text-gray-700 dark:text-gray-300 hover:text-wow-blue dark:hover:text-wow-gold transition-colors">
+                        Tutoriels
+                    </a>
+                    <a href="{{ url_for('public.categories') }}" class="text-gray-700 dark:text-gray-300 hover:text-wow-blue dark:hover:text-wow-gold transition-colors">
+                        Catégories
+                    </a>
+                    <a href="{{ url_for('public.tags') }}" class="text-gray-700 dark:text-gray-300 hover:text-wow-blue dark:hover:text-wow-gold transition-colors">
+                        Tags
+                    </a>
+                </div>
+                
+                <!-- Actions utilisateur -->
+                <div class="flex items-center space-x-4">
+                    <!-- Recherche -->
+                    <form action="{{ url_for('public.search') }}" method="GET" class="hidden sm:block">
+                        <div class="relative">
+                            <input type="text" name="q" placeholder="Rechercher..." 
+                                   class="w-64 px-3 py-2 pl-10 pr-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wow-blue focus:border-transparent">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Toggle dark mode -->
+                    <button @click="darkMode = !darkMode" class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-wow-blue">
+                        <svg x-show="!darkMode" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg x-show="darkMode" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Menu utilisateur -->
+                    {% if current_user.is_authenticated %}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-wow-blue">
+                                <img class="h-8 w-8 rounded-full" src="{{ current_user.get_avatar_url() }}" alt="{{ current_user.display_name }}">
+                                <span class="hidden md:block text-gray-700 dark:text-gray-300">{{ current_user.display_name }}</span>
+                            </button>
+                            
+                            <div x-show="open" @click.away="open = false" x-transition 
+                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50">
+                                <a href="{{ url_for('dashboard.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Tableau de bord
+                                </a>
+                                <a href="{{ url_for('dashboard.profile') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Profil
+                                </a>
+                                {% if current_user.is_moderator %}
+                                    <a href="{{ url_for('admin.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Administration
+                                    </a>
+                                {% endif %}
+                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                                <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-700 dark:text-gray-300 hover:text-wow-blue dark:hover:text-wow-gold transition-colors">
+                            Connexion
+                        </a>
+                        <a href="{{ url_for('auth.signup') }}" class="bg-wow-blue hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                            Inscription
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                {% for category, message in messages %}
+                    <div class="p-4 mb-4 rounded-md {% if category == 'error' %}bg-red-50 text-red-800 border border-red-200{% elif category == 'success' %}bg-green-50 text-green-800 border border-green-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Contenu principal -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center">
+                        <img class="h-8 w-auto" src="{{ url_for('static', filename='img/logo.svg') }}" alt="{{ app_name }}">
+                        <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">WoW Flask</span>
+                    </div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-400">
+                        Portail communautaire français pour les tutoriels World of Warcraft. 
+                        Guides, stratégies et conseils par la communauté, pour la communauté.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Contenu</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="{{ url_for('public.tutorials') }}" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">Tutoriels</a></li>
+                        <li><a href="{{ url_for('public.categories') }}" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">Catégories</a></li>
+                        <li><a href="{{ url_for('public.tags') }}" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">Tags</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Communauté</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="{{ url_for('public.about') }}" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">À propos</a></li>
+                        <li><a href="{{ url_for('public.contact') }}" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">Contact</a></li>
+                        <li><a href="/api/docs" class="text-gray-600 dark:text-gray-400 hover:text-wow-blue dark:hover:text-wow-gold">API</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-center text-gray-500 dark:text-gray-400">
+                    © {{ moment().year }} {{ app_name }}. Fait avec ❤️ pour la communauté WoW française.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    
+    <!-- Analytics (si configuré) -->
+    {% if config.PLAUSIBLE_DOMAIN %}
+        <script defer data-domain="{{ config.PLAUSIBLE_DOMAIN }}" src="{{ config.PLAUSIBLE_SCRIPT_URL }}"></script>
+    {% endif %}
+    
+    {% if config.GA_TRACKING_ID %}
+        <!-- Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.GA_TRACKING_ID }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config.GA_TRACKING_ID }}');
+        </script>
+    {% endif %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

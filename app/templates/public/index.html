@@ -1,0 +1,218 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ app_name }} - Tutoriels World of Warcraft en français{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-blue-900 via-purple-900 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div class="text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                Guides <span class="text-wow-gold">World of Warcraft</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Découvrez les meilleurs guides, stratégies et tutoriels créés par la communauté française de World of Warcraft
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('public.tutorials') }}" 
+                   class="bg-wow-gold hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-colors">
+                    Parcourir les guides
+                </a>
+                {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.signup') }}" 
+                   class="border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors">
+                    Rejoindre la communauté
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques -->
+<section class="py-16 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="p-6">
+                <div class="text-4xl font-bold text-wow-blue dark:text-wow-gold mb-2">
+                    {{ stats.total_tutorials or 0 }}
+                </div>
+                <div class="text-gray-600 dark:text-gray-400 text-lg">Guides disponibles</div>
+            </div>
+            <div class="p-6">
+                <div class="text-4xl font-bold text-wow-blue dark:text-wow-gold mb-2">
+                    {{ stats.total_users or 0 }}
+                </div>
+                <div class="text-gray-600 dark:text-gray-400 text-lg">Membres actifs</div>
+            </div>
+            <div class="p-6">
+                <div class="text-4xl font-bold text-wow-blue dark:text-wow-gold mb-2">
+                    {{ categories|length or 0 }}
+                </div>
+                <div class="text-gray-600 dark:text-gray-400 text-lg">Catégories</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Catégories principales -->
+<section class="py-16 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Explorez nos catégories
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400">
+                Trouvez les guides qui correspondent à votre style de jeu
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for category in categories[:8] %}
+            <a href="{{ category.url }}" 
+               class="group bg-white dark:bg-gray-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-wow-blue dark:group-hover:text-wow-gold transition-colors">
+                        {{ category.name }}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                        {{ category.description }}
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ category.tutorial_count }} guide{{ 's' if category.tutorial_count != 1 }}
+                        </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-wow-blue dark:group-hover:text-wow-gold transition-colors" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{{ url_for('public.categories') }}" 
+               class="inline-flex items-center text-wow-blue dark:text-wow-gold hover:underline">
+                Voir toutes les catégories
+                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Tutoriels récents -->
+{% if recent_tutorials %}
+<section class="py-16 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Derniers guides publiés
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400">
+                Restez à jour avec les derniers guides de la communauté
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for tutorial in recent_tutorials %}
+            <article class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                {% if tutorial.cover_image_url %}
+                <img src="{{ tutorial.cover_image_url }}" alt="{{ tutorial.title }}" 
+                     class="w-full h-48 object-cover">
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="inline-block bg-wow-blue text-white text-xs px-2 py-1 rounded">
+                            {{ tutorial.category.name }}
+                        </span>
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                            {{ tutorial.estimated_read_min }} min
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        <a href="{{ tutorial.url }}" class="hover:text-wow-blue dark:hover:text-wow-gold transition-colors">
+                            {{ tutorial.title }}
+                        </a>
+                    </h3>
+                    
+                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                        {{ tutorial.summary }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center">
+                            <img src="{{ tutorial.author.get_avatar_url(24) }}" alt="{{ tutorial.author.display_name }}" 
+                                 class="w-6 h-6 rounded-full mr-2">
+                            <span class="text-gray-600 dark:text-gray-400">{{ tutorial.author.display_name }}</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                {{ tutorial.views_count }}
+                            </span>
+                            
+                            {% if tutorial.rating_avg > 0 %}
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                {{ tutorial.rating_avg }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{{ url_for('public.tutorials') }}" 
+               class="bg-wow-blue hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                Voir tous les guides
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to action -->
+<section class="py-16 bg-wow-blue dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Partagez votre expertise
+        </h2>
+        <p class="text-xl text-blue-100 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+            Vous avez des connaissances à partager ? Rejoignez notre communauté d'auteurs et aidez d'autres joueurs à progresser.
+        </p>
+        {% if current_user.is_authenticated %}
+            {% if current_user.is_author %}
+                <a href="{{ url_for('dashboard.new_tutorial') }}" 
+                   class="bg-wow-gold hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-colors">
+                    Créer un guide
+                </a>
+            {% else %}
+                <a href="{{ url_for('dashboard.settings') }}" 
+                   class="bg-wow-gold hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-colors">
+                    Demander le statut d'auteur
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{{ url_for('auth.signup') }}" 
+               class="bg-wow-gold hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-colors">
+                Rejoindre la communauté
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

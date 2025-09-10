@@ -218,21 +218,28 @@ Exemples d'endpoints :
 
 ### Railway
 
-```bash
-# Installer Railway CLI
-npm install -g @railway/cli
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/wow-flask)
 
-# Se connecter et déployer
+Railway détecte automatiquement la configuration et déploie l'application:
+
+```bash
+# Cloner et déployer
+git clone https://github.com/Plume-Paopedia/wow-flask.git
+cd wow-flask
+
+# Déployer sur Railway (nécessite Railway CLI)
 railway login
 railway link
 railway up
 ```
 
 Variables d'environnement à configurer sur Railway :
+- `SECRET_KEY` (obligatoire)
 - `DATABASE_URL` (PostgreSQL automatique)
 - `REDIS_URL` (Redis automatique)
-- `SECRET_KEY`
-- Autres variables selon vos besoins
+- Autres variables selon vos besoins (voir `.env.example`)
+
+📖 [Guide complet Railway](RAILWAY.md)
 
 ### Render
 

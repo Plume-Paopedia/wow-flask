@@ -59,7 +59,6 @@ def load_user(user_id: str):
     return User.query.get(int(user_id))
 
 
-@babel.localeselector
 def get_locale():
     """Sélectionne la locale pour l'utilisateur."""
     from flask import request, session, current_app

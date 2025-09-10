@@ -91,7 +91,7 @@ ENV PYTHONPATH=/app
 
 # Commande par défaut
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-8000}", "--workers", "2", "--timeout", "120", "app:create_app()"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --timeout 120 'app:create_app()'"]
 
 # Stage pour les tests
 FROM development as testing

@@ -1,0 +1,25 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[build.environment]
+PYTHONPATH = "/app"
+
+[deploy.environment]
+FLASK_ENV = "production"
+
+# Railway automatically provides these variables:
+# - DATABASE_URL (PostgreSQL)
+# - REDIS_URL (if Redis add-on is enabled)
+# - PORT (deployment port)
+
+# Variables you need to set manually in Railway dashboard:
+# - SECRET_KEY (generate a secure random key)
+# - MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD (if email features needed)
+# - BATTLE_NET_CLIENT_ID, BATTLE_NET_CLIENT_SECRET (if OAuth needed)
+# - S3_* variables (if file uploads to S3 needed)

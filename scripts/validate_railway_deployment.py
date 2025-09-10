@@ -10,6 +10,11 @@ import time
 import requests
 from pathlib import Path
 
+# Ajouter le répertoire racine du projet au PYTHONPATH
+script_dir = Path(__file__).parent
+project_root = script_dir.parent
+sys.path.insert(0, str(project_root))
+
 def test_environment():
     """Test que l'environnement est correctement configuré."""
     print("🔍 Test de l'environnement...")

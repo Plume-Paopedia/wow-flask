@@ -24,13 +24,12 @@ RUN useradd --create-home --shell /bin/bash app
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de configuration
-COPY pyproject.toml ./
+# Copier les fichiers de dépendances
 COPY requirements*.txt* ./
 
 # Installer les dépendances Python (dev)
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install -e .[dev,admin]
+RUN pip install -r requirements.txt
 
 # Copier le code source
 COPY . .
@@ -60,12 +59,12 @@ RUN mkdir -p /app /app/instance /app/uploads /app/logs && \
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de configuration
-COPY pyproject.toml ./
+# Copier les fichiers de dépendances
+COPY requirements.txt ./
 
 # Installer les dépendances Python (production uniquement)
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install -e .
+RUN pip install -r requirements.txt
 
 # Copier le code source (sans les fichiers de développement)
 COPY --chown=app:app app ./app/
